@@ -76,9 +76,6 @@ static NSDictionary *countryNamesAndCodesByFirstLetter = nil;
         [arrayForLetter addObject:@[value, [countryCodes objectAtIndex:[countryNames indexOfObject:value]]]];
     }
     
-    // arraysByLetter will contain the result you expect
-    //NSLog(@"Dictionary: %@", arraysByLetter);
-    
     return arraysByLetter;
 }
 
@@ -144,11 +141,13 @@ static NSDictionary *countryNamesAndCodesByFirstLetter = nil;
 
 - (void)setSelectedCountryCode:(NSString *)countryCode
 {
+    NSString *substring = [countryCode substringWithRange:NSMakeRange(0, 1)];
     NSArray *sortedKeys = [countryNamesAndCodesByFirstLetter.allKeys sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
-    NSArray *letterArray = [sortedKeys objectAtIndex:[countryCode substringWithRange:NSMakeRange(0, 1)]];
-    NSInteger section = [sortedKeys indexOfObject:letterArray];
+    NSArray *letterArray = [countryNamesAndCodesByFirstLetter objectForKey:substring];
     
+    NSInteger section = [sortedKeys indexOfObject:substring];
     NSInteger index = NSNotFound;
+
     for (NSArray *country in letterArray) {
         if ([country[1] isEqualToString:countryCode]) {
             index = [letterArray indexOfObject:country];
@@ -156,27 +155,25 @@ static NSDictionary *countryNamesAndCodesByFirstLetter = nil;
     }
     
     if (index != NSNotFound)
-    {
         [self selectRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:section] animated:YES scrollPosition:UITableViewScrollPositionMiddle];
-    }
 }
 
 - (NSString *)selectedCountryCode
 {
-    NSIndexPath *index = selectedIndexPath;
     NSArray *sortedKeys = [countryNamesAndCodesByFirstLetter.allKeys sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
-    NSArray *selectedCountry = [[sortedKeys objectAtIndex:index.section] objectAtIndex:index.row];
+    NSArray *selectedCountry = [[countryNamesAndCodesByFirstLetter objectForKey:[sortedKeys objectAtIndex:selectedIndexPath.section]] objectAtIndex:selectedIndexPath.row];
     return selectedCountry[1];
 }
 
 - (void)setSelectedCountryName:(NSString *)countryName
 {
-    
+    NSString *substring = [countryName substringWithRange:NSMakeRange(0, 1)];
     NSArray *sortedKeys = [countryNamesAndCodesByFirstLetter.allKeys sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
-    NSArray *letterArray = [sortedKeys objectAtIndex:[countryName substringWithRange:NSMakeRange(0, 1)]];
-    NSInteger section = [sortedKeys indexOfObject:letterArray];
+    NSArray *letterArray = [countryNamesAndCodesByFirstLetter objectForKey:substring];
     
+    NSInteger section = [sortedKeys indexOfObject:substring];
     NSInteger index = NSNotFound;
+    
     for (NSArray *country in letterArray) {
         if ([country[0] isEqualToString:countryName]) {
             index = [letterArray indexOfObject:country];
@@ -184,16 +181,13 @@ static NSDictionary *countryNamesAndCodesByFirstLetter = nil;
     }
     
     if (index != NSNotFound)
-    {
         [self selectRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:section] animated:YES scrollPosition:UITableViewScrollPositionMiddle];
-    }
 }
 
 - (NSString *)selectedCountryName
 {
-    NSIndexPath *index = selectedIndexPath;
     NSArray *sortedKeys = [countryNamesAndCodesByFirstLetter.allKeys sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
-    NSArray *selectedCountry = [[sortedKeys objectAtIndex:index.section] objectAtIndex:index.row];
+    NSArray *selectedCountry = [[countryNamesAndCodesByFirstLetter objectForKey:[sortedKeys objectAtIndex:selectedIndexPath.section]] objectAtIndex:selectedIndexPath.row];
     return selectedCountry[0];
 }
 
@@ -207,8 +201,6 @@ static NSDictionary *countryNamesAndCodesByFirstLetter = nil;
     NSArray *sortedKeys = [countryNamesAndCodesByFirstLetter.allKeys sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
     NSArray *arrayForLetterIndex = [countryNamesAndCodesByFirstLetter objectForKey:[sortedKeys objectAtIndex:section]];
     return arrayForLetterIndex.count;
-    
-    //[countryCodes count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
